@@ -8,19 +8,19 @@ import (
 )
 
 var host string
-var start_port int
-var end_port int
+var startPort int
+var endPort int
 
 func main() {
-	user_input()
+	userInput()
 }
 
-func check_port(host string, start_port, end_port int) {
+func checkPort(host string, startPort, endPort int) {
 
-	for i := start_port; i <= end_port; i++ {
+	for i := startPort; i <= endPort; i++ {
 		fmt.Println(i)
-		qualified_host := fmt.Sprintf("%s%s%d", host, ":", i)
-		conn, err := net.DialTimeout("tcp", qualified_host, 1*time.Second)
+		qualifiedHost := fmt.Sprintf("%s%s%d", host, ":", i)
+		conn, err := net.DialTimeout("tcp", qualifiedHost, 1*time.Second)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -31,13 +31,13 @@ func check_port(host string, start_port, end_port int) {
 	}
 }
 
-func user_input() {
+func userInput() {
 	fmt.Println("Host> ")
 	fmt.Scan(&host)
 	fmt.Println("Starting Port (i. e. 80)> ")
-	fmt.Scan(&start_port)
+	fmt.Scan(&startPort)
 	fmt.Println("End Port (i. e. 8080)> ")
-	fmt.Scan(&end_port)
+	fmt.Scan(&endPort)
 	fmt.Println("Running scan...")
-	check_port(host, start_port, end_port)
+	checkPort(host, startPort, endPort)
 }
