@@ -15,7 +15,7 @@ func main() {
 
 // choice between radius or diameter
 func switchCalculation() {
-	fmt.Println("Select 1 for Radius \n Select 2 for Diameter")
+	fmt.Println("Select 1 for Radius\nSelect 2 for Diameter")
 	fmt.Scan(&idCalculation)
 	switch {
 	case idCalculation == 1:
@@ -25,7 +25,7 @@ func switchCalculation() {
 	}
 }
 
-// calcola tramite il raggio
+// calcolate with radius
 func withRadius() float64 {
 	fmt.Println("Insert radius: ")
 	fmt.Scan(&radius)
@@ -33,7 +33,7 @@ func withRadius() float64 {
 	return tot
 }
 
-// calcola tramite il diametro
+// calculate with diameter
 func withDiameter() float64 {
 	fmt.Println("Insert diameter:")
 	fmt.Scan(&diameter)
