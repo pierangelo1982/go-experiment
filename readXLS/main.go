@@ -33,6 +33,7 @@ func readFile() {
 			fmt.Println("----------------------------------------------------------")
 		}
 	}
+	println("TOTALE:", conta)
 	println("range sheet:", xlFile.Sheets)
 }
 
