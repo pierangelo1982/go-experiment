@@ -19,7 +19,7 @@ func readFile() {
 	if err != nil {
 		fmt.Println("errore:", err)
 	}
-	for _, sheet := range xlFile.Sheets {
+	for _, sheet := range xlFile.Sheets[:1] {
 		for _, row := range sheet.Rows {
 			conta = conta + 1
 			numero = 0
@@ -35,3 +35,5 @@ func readFile() {
 	}
 	println("range sheet:", xlFile.Sheets)
 }
+
+// N.B: Siccome il file ha 2 tabelle, con [:1] gli dico di limitarsi solo alla prima
