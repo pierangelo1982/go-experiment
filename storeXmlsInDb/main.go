@@ -57,12 +57,12 @@ func connectDB() {
 	}
 	defer db.Close()
 	// create db se non esiste
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gociao")
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gotest")
 	if err != nil {
 		panic(err)
 	}
 	// creare tabella
-	_, err = db.Exec("CREATE TABLE pneumatici ( id integer PRIMARY KEY, marca varchar(250) null, misura varchar(250) null, codice varchar(250), xl varchar(250), nome varchar(250), stagione varchar(250) )")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS pneumatici ( id integer NOT NULL AUTO_INCREMENT,marca varchar(250) null, misura varchar(250) null, codice varchar(250) null, xl varchar(250) null, nome varchar(250) null, stagione varchar(250) null, PRIMARY KEY (id) )")
 	if err != nil {
 		panic(err)
 	}
