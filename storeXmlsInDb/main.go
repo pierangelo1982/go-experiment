@@ -56,4 +56,14 @@ func connectDB() {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
 	defer db.Close()
+	// create db se non esiste
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gociao")
+	if err != nil {
+		panic(err)
+	}
+	// creare tabella
+	_, err = db.Exec("CREATE TABLE pneumatici ( id integer PRIMARY KEY, marca varchar(250) null, misura varchar(250) null, codice varchar(250), xl varchar(250), nome varchar(250), stagione varchar(250) )")
+	if err != nil {
+		panic(err)
+	}
 }
