@@ -18,12 +18,23 @@ var xl string
 var nome string
 var stagione string
 
+type dbConn struct {
+	db *sql.DB
+}
+
 func main() {
-	readFile()
 	connectDB()
+	readFile()
 }
 
 func readFile() {
+	// db connection
+	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gotest")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
 	excelFileName := "/home/pierangelo/goworkspace/src/github.com/pierangelo1982/go-experiment/storeXmlsInDb/00-UNITI.xlsx"
 	xlFile, err := xlsx.OpenFile(excelFileName)
 	if err != nil {
@@ -40,6 +51,12 @@ func readFile() {
 			xl := row.Cells[3]
 			nome := row.Cells[4]
 			stagione := row.Cells[5]
+			// salvo nel db
+			_, err = db.Exec("INSERT INTO pneumatici (marca, misura, codice, xl, nome, stagione) VALUES" + fmt.Sprintf("('%s', '%s', '%s', '%s', '%s', '%s')", marca, misura, codice, xl, nome, stagione))
+			if err != nil {
+				panic(err)
+			}
+
 			fmt.Printf("%s \t %s \t %s \t %s \t %s \t %s \n", marca, misura, codice, xl, nome, stagione)
 			//fmt.Println("CONTATORE:", conta)
 			fmt.Println("---------------------------------------------------------------------------------")
@@ -51,7 +68,6 @@ func readFile() {
 
 func connectDB() {
 	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gotest")
-	fmt.Println("db status:", db.Stats())
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
