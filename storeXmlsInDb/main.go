@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/tealeg/xlsx"
 )
+import _ "github.com/go-sql-driver/mysql"
 
 var conta int
 var numero int
@@ -18,6 +20,7 @@ var stagione string
 
 func main() {
 	readFile()
+	connectDB()
 }
 
 func readFile() {
@@ -44,4 +47,13 @@ func readFile() {
 	}
 	println("TOTALE:", conta)
 	println("range sheet:", xlFile.Sheets)
+}
+
+func connectDB() {
+	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gotest")
+	fmt.Println("db status:", db.Stats())
+	if err != nil {
+		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
+	}
+	defer db.Close()
 }
