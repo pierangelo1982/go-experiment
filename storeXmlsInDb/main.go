@@ -3,10 +3,12 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/tealeg/xlsx"
+
+	_ "github.com/go-sql-driver/mysql"
 )
-import _ "github.com/go-sql-driver/mysql"
 
 var conta int
 var numero int
@@ -29,7 +31,7 @@ func main() {
 
 func readFile() {
 	// db connection
-	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gotest")
+	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gociao")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -46,7 +48,8 @@ func readFile() {
 			numero = 0
 
 			marca := row.Cells[0]
-			misura := row.Cells[1]
+			tmpMisura := row.Cells[1]
+			misura := stripSpaces(tmpMisura.String()) // tolgo spazi al bianchi tra i codici
 			codice := row.Cells[2]
 			xl := row.Cells[3]
 			nome := row.Cells[4]
@@ -67,13 +70,13 @@ func readFile() {
 }
 
 func connectDB() {
-	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gotest")
+	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gociao")
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
 	defer db.Close()
 	// create db se non esiste
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gotest")
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gociao")
 	if err != nil {
 		panic(err)
 	}
@@ -82,4 +85,10 @@ func connectDB() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// eliminate white spaces from strings
+func stripSpaces(words string) string {
+	x := strings.Replace(words, " ", "", -1)
+	return x
 }
