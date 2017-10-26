@@ -31,7 +31,7 @@ func main() {
 
 func readFile() {
 	// db connection
-	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gociao")
+	db, err := sql.Open("mysql", "root:alnitek82@tcp(0.0.0.0:3307)/pneumatici")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -70,13 +70,13 @@ func readFile() {
 }
 
 func connectDB() {
-	db, err := sql.Open("mysql", "root:alnitek@tcp(0.0.0.0:3308)/gociao")
+	db, err := sql.Open("mysql", "root:alnitek82@tcp(0.0.0.0:3307)/pneumatici")
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
 	defer db.Close()
 	// create db se non esiste
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "gociao")
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + "pneumatici")
 	if err != nil {
 		panic(err)
 	}
