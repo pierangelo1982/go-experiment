@@ -2,48 +2,29 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/pierangelo1982/go-experiment/delbarbaStoreJsonInDB/model"
 )
 
-const username string = "xxxxxxxxxx"
-const password string = "xxxxxxxxxx"
+const username string = "xxxx"
+const password string = "xxxx"
 const loginURL = "http://api.fintyreclub.it/gommista/token"
 
 var myToken string
-
-type customer struct {
-	ID                        int    `json:"id"`
-	DataInserimento           string `json:"data_inserimento"`
-	Nome                      string `json:"nome"`
-	Cognome                   string `json:"cognome"`
-	IDGommista                string `json:"id_gommista"`
-	Indirizzo                 string `json:"indirizzo"`
-	Citta                     string `json:"citta"`
-	Provincia                 string `json:"provincia"`
-	Cap                       string `json:"cap"`
-	Telefono                  string `json:"telefono"`
-	Email                     string `json:"email"`
-	Cellulare                 string `json:"cellulare"`
-	Note                      string `json:"note"`
-	IsApp                     string `json:"is_app"`
-	DataScadenzaPatente       string `json:"data_scadenza_patente"`
-	DataRegistrazioneApp      string `json:"data_registrazione_app"`
-	DataConfermaRegistrazione string `json:"data_conferma_registrazione_app"`
-	DataUltimoLogin           string `json:"data_ultimo_login_app"`
-	//Veicoli                   []string `json:"veicoli"`
-}
 
 func main() {
 	fmt.Println(username)
 	fmt.Println(password)
 	myToken := getToken(loginURL, username, password)
 	listCustomer(myToken)
-	fmt.Println(myToken)
+	//fmt.Println(myToken)
 	//b, err := json.Marshal("http://api.fintyreclub.it/gommista/token")
 }
 
@@ -84,12 +65,28 @@ func listCustomer(token string) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(body)
+	//fmt.Println(body)
 
-	var customers = []customer{}
+	var customers = []model.Customer{}
 	err = json.Unmarshal([]byte(body), &customers)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(customers)
+
+	db, err := sql.Open("mysql", "root:alnitek82@tcp(0.0.0.0:3310)/delbarba_backend_development")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	myDateTime := time.Now().Format("2006-02-01 15:04:05")
+	for i := range customers {
+		fmt.Println(customers[i].Nome + " " + customers[i].ID)
+		_, err = db.Exec("INSERT INTO customers (customer_code, name, surname, id_gommista, address, city, prov, zip, phone, email, mobile, note) VALUES" + fmt.Sprintf("(%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", customers[i].ID, customers[i].Nome, customers[i].Cognome, customers[i].IDGommista, customers[i].Indirizzo, customers[i].Citta, customers[i].Provincia, customers[i].Cap, customers[i].Telefono, customers[i].Email, customers[i].Cellulare, customers[i].Note))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	db.Close()
+	fmt.Println(myDateTime)
 }
