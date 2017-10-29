@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pierangelo1982/go-experiment/delbarbaStoreJsonInDB/model"
+	"github.com/pierangelo1982/go-experiment/delbarbaStoreJsonInDB/utils"
 )
 
 const username string = "xxxx"
@@ -42,7 +42,7 @@ func getToken(url string, username string, password string) string {
 		fmt.Println("Unable to reach the server.")
 	} else {
 		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Println("body=", string(body))
+		//fmt.Println("body=", string(body))
 		data := model.Credenziali{}
 		_ = json.Unmarshal([]byte(body), &data)
 		token = data.Token
@@ -54,7 +54,7 @@ func getToken(url string, username string, password string) string {
 
 func listCustomer(token string) {
 	url := "http://api.fintyreclub.it/gommista/users?token=" + token
-	fmt.Println("url:", url)
+	//fmt.Println("url:", url)
 	//res, err := http.Get(url)
 	res, err := http.Get(url)
 	if err != nil {
@@ -79,14 +79,14 @@ func listCustomer(token string) {
 		panic(err.Error())
 	}
 
-	myDateTime := time.Now().Format("2006-02-01 15:04:05")
+	//myDateTime := time.Now().Format("2006-01-02 15:04:05")
 	for i := range customers {
-		fmt.Println(customers[i].Nome + " " + customers[i].ID)
-		_, err = db.Exec("INSERT INTO customers (customer_code, name, surname, id_gommista, address, city, prov, zip, phone, email, mobile, note) VALUES" + fmt.Sprintf("(%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')", customers[i].ID, customers[i].Nome, customers[i].Cognome, customers[i].IDGommista, customers[i].Indirizzo, customers[i].Citta, customers[i].Provincia, customers[i].Cap, customers[i].Telefono, customers[i].Email, customers[i].Cellulare, customers[i].Note))
+		isAPP := 1
+		_, err = db.Exec("INSERT INTO customers (customer_code, name, surname, id_gommista, address, city, prov, zip, phone, email, mobile, note, driving_license_expiration, is_app) VALUES" + fmt.Sprintf("(%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d')", customers[i].ID, customers[i].Nome, customers[i].Cognome, customers[i].IDGommista, customers[i].Indirizzo, customers[i].Citta, customers[i].Provincia, customers[i].Cap, customers[i].Telefono, customers[i].Email, customers[i].Cellulare, customers[i].Note, utils.ParseData(customers[i].DataScadenzaPatente).Format("2006-01-02"), isAPP))
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 	db.Close()
-	fmt.Println(myDateTime)
+	//fmt.Println(myDateTime)
 }
