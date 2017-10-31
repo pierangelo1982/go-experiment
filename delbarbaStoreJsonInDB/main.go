@@ -23,7 +23,8 @@ func main() {
 	fmt.Println(username)
 	fmt.Println(password)
 	myToken := getToken(loginURL, username, password)
-	listCustomer(myToken)
+	//listCustomer(myToken)
+	insertVehicle(myToken)
 	//fmt.Println(myToken)
 	//b, err := json.Marshal("http://api.fintyreclub.it/gommista/token")
 }
@@ -78,7 +79,6 @@ func listCustomer(token string) {
 	if err != nil {
 		panic(err.Error())
 	}
-
 	//myDateTime := time.Now().Format("2006-01-02 15:04:05")
 	for i := range customers {
 		isAPP := 1
@@ -89,4 +89,28 @@ func listCustomer(token string) {
 	}
 	db.Close()
 	//fmt.Println(myDateTime)
+}
+
+func insertVehicle(token string) {
+	url := "http://api.fintyreclub.it/gommista/users?token=" + token
+	res, err := http.Get(url)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(res)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println(body)
+
+	var customers = []model.Customer{}
+	err = json.Unmarshal([]byte(body), &customers)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(customers)
+	for i := range customers {
+		utils.GetCustomerDetail(customers[i].ID, token)
+	}
 }
