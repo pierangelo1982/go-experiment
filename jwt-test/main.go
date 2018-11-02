@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -12,6 +12,7 @@ import (
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	jwt.StandardClaims
 }
 
 type jwToken struct {
@@ -22,24 +23,24 @@ type Exception struct {
 	Message string `json:"message"`
 }
 
+var signingKey = []byte("signing-key")
+
 func CreateTokenEndpoint(w http.ResponseWriter, r *http.Request) {
-	var user User
-	_ = json.NewDecoder(r.Body).Decode(&user)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"password": user.Password,
-	})
-	tokenString, error := token.SignedString([]byte("secret"))
-	if error != nil {
-		fmt.Println(error)
-		json.NewEncoder(w).Encode(error)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, User{})
+	ss, err := token.SignedString(signingKey)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		log.Printf("err: %+v\n", err)
+		return
 	}
-	json.NewEncoder(w).Encode(jwToken{Token: tokenString})
+	w.WriteHeader(200)
+	w.Write([]byte(ss))
+	log.Printf("issued token: %v\n", ss)
+	return
 }
 
-func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {
-
-}
+func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {}
 
 func main() {
 	// server
