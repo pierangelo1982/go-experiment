@@ -26,18 +26,24 @@ type Exception struct {
 var signingKey = []byte("signing-key")
 
 func CreateTokenEndpoint(w http.ResponseWriter, r *http.Request) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, User{})
-	ss, err := token.SignedString(signingKey)
+	// Embed User information to `token`
+	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &User{
+		Username: "test",
+		Password: "password",
+	})
+	// token -> string. Only server knows this secret (foobar).
+	tokenstring, err := token.SignedString([]byte("foobar"))
 	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-		log.Printf("err: %+v\n", err)
-		return
+		log.Fatalln(err)
 	}
-	w.WriteHeader(200)
-	w.Write([]byte(ss))
-	log.Printf("issued token: %v\n", ss)
-	return
+
+	user := User{}
+	token, err = jwt.ParseWithClaims(tokenstring, &user, func(token *jwt.Token) (interface{}, error) {
+		return []byte("foobar"), nil
+	})
+
+	log.Println(token.Valid, user, err)
+	w.Write([]byte(tokenstring))
 }
 
 func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {}
