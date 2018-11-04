@@ -5,6 +5,10 @@ jwt-go
 ```
 import "github.com/dgrijalva/jwt-go"
 ```
+go-jwt-middleware
+```
+go get github.com/auth0/go-jwt-middleware
+```
 
 
 

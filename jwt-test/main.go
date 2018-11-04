@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -23,27 +23,26 @@ type Exception struct {
 	Message string `json:"message"`
 }
 
-var signingKey = []byte("signing-key")
-
 func CreateTokenEndpoint(w http.ResponseWriter, r *http.Request) {
-	// Embed User information to `token`
-	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &User{
-		Username: "test",
-		Password: "password",
-	})
-	// token -> string. Only server knows this secret (foobar).
-	tokenstring, err := token.SignedString([]byte("foobar"))
-	if err != nil {
-		log.Fatalln(err)
-	}
 
-	user := User{}
-	token, err = jwt.ParseWithClaims(tokenstring, &user, func(token *jwt.Token) (interface{}, error) {
-		return []byte("foobar"), nil
-	})
+	var mySigningKey = []byte("secret")
 
-	log.Println(token.Valid, user, err)
-	w.Write([]byte(tokenstring))
+	/* Create the token */
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	// Create a map to store our claims
+	claims := token.Claims.(jwt.MapClaims)
+
+	/* Set token claims */
+	claims["admin"] = true
+	claims["name"] = "Ado Kukic"
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	/* Sign the token with our secret */
+	tokenString, _ := token.SignedString(mySigningKey)
+
+	/* Finally, write the token to the browser window */
+	w.Write([]byte(tokenString))
 }
 
 func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {}
