@@ -41,6 +41,8 @@ func CreateTokenEndpoint(w http.ResponseWriter, r *http.Request) {
 	/* Sign the token with our secret */
 	tokenString, _ := token.SignedString(mySigningKey)
 
+	fmt.Println("Bearer", tokenString)
+
 	/* Finally, write the token to the browser window */
 	w.Write([]byte(tokenString))
 }
