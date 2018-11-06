@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/context"
@@ -16,6 +15,11 @@ import (
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	jwt.StandardClaims
+}
+
+type MyCustomClaims struct {
+	Foo string `json:"foo"`
 	jwt.StandardClaims
 }
 
@@ -31,16 +35,16 @@ func CreateTokenEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	var mySigningKey = []byte("secret")
 
+	// Create the Claims
+	claims := User{
+		"bar",
+		"password123",
+		jwt.StandardClaims{
+			ExpiresAt: 100,
+		},
+	}
 	/* Create the token */
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// Create a map to store our claims
-	claims := token.Claims.(jwt.MapClaims)
-
-	/* Set token claims */
-	claims["admin"] = true
-	claims["name"] = "Ado Kukic"
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	/* Sign the token with our secret */
 	tokenString, _ := token.SignedString(mySigningKey)
@@ -64,7 +68,7 @@ func ValidateMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		if authorizationHeader != "" {
 			bearerToken := strings.Split(authorizationHeader, " ")
 			if len(bearerToken) == 2 {
-				token, error := jwt.Parse(bearerToken[1], func(token *jwt.Token) (interface{}, error) {
+				token, error := jwt.ParseWithClaims(bearerToken[1], &User{}, func(token *jwt.Token) (interface{}, error) {
 					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 						return nil, fmt.Errorf("There was an error")
 					}
