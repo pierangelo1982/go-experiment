@@ -7,8 +7,15 @@ import (
 	"os"
 )
 
+type Word struct {
+	Di   string `xml:"di,attr"`
+	Ga   string `xml:"ga,attr"`
+	Anno string `xml:"yravg,attr"`
+}
+
 type Chapter struct {
 	Number string `xml:"n,attr"`
+	Words  []Word `xml:"w"`
 }
 type Book struct {
 	Number string `xml:"n,attr"`
@@ -41,12 +48,19 @@ func main() {
 	// xmlFiles content into 'users' which we defined above
 	xml.Unmarshal(byteValue, &query)
 
-	fmt.Println(query.Books)
+	//fmt.Println(query.Books)
 
 	for i := 0; i < len(query.Books); i++ {
 		fmt.Println("Libri:", query.Books[i].Number)
 		for x := 0; x < len(query.Books[i].Chapters); x++ {
 			fmt.Println("Capitoli:", query.Books[i].Chapters[x].Number)
+			for y := 0; y < len(query.Books[i].Chapters[x].Words); y++ {
+				fmt.Println("id", query.Books[i].Chapters[x].Words[y].Di)
+				fmt.Println("ga", query.Books[i].Chapters[x].Words[y].Ga)
+				fmt.Println("anno", query.Books[i].Chapters[x].Words[y].Anno)
+				fmt.Println("+++")
+			}
+
 			fmt.Println("----------------------------------------------")
 		}
 	}
