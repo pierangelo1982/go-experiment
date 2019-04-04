@@ -8,11 +8,6 @@ import (
 	"os"
 )
 
-type Subscriber struct {
-	Name  string
-	Email string
-}
-
 func main() {
 	// Open the file
 	csvfile, _ := os.Open("mycsv.csv")
