@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// Open the file
-	csvfile, _ := os.Open("mycsv.csv")
+	csvfile, _ := os.Open("francia-all.csv")
 	// parse the file
 	reader := csv.NewReader(csvfile)
 

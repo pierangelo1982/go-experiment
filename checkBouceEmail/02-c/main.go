@@ -11,7 +11,6 @@ import (
 func main() {
 	// Open the file
 	csvfile, _ := os.Open("mycsv.csv")
-	defer f.Close()
 	// parse the file
 	reader := csv.NewReader(csvfile)
 
